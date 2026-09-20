@@ -30,7 +30,8 @@ export default function Login() {
             const data = await response.json();
 
             if (!response.ok || !data.success) {
-                throw new Error(data.message || 'Login gagal');
+                const detail = data.error ? `: ${data.error}` : '';
+                throw new Error(`${data.message || 'Login gagal'}${detail}`);
             }
 
             // Simpan token JWT dan profil user ke localStorage (seperti auth session)

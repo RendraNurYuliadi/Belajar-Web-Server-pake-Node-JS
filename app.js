@@ -21,17 +21,40 @@ app.use(cors());
 app.use(express.json());
 
 // ==========================================
-// 2. KONEKSI KE MONGODB ATLAS (CLOUD)
+// 2. KONEKSI KE MONGODB ATLAS (SERVERLESS READY)
 // ==========================================
-mongoose
-  .connect(mongoUri)
-  .then(() => {
-    console.log('✅ [MONGODB ATLAS] Terhubung sukses ke database:', mongoose.connection.name);
-    console.log('📦 [MONGODB ATLAS] Koleksi users & products siap digunakan!');
-  })
-  .catch((err) => {
-    console.error('❌ [MONGODB ATLAS] Gagal terkoneksi:', err.message);
+let isConnected = false;
+
+const connectDB = async () => {
+  if (mongoose.connection.readyState >= 1) {
+    return;
+  }
+
+  const uri = process.env.MONGO_URI;
+  if (!uri) {
+    throw new Error('Variabel MONGO_URI belum diset di Environment Variables Vercel!');
+  }
+
+  await mongoose.connect(uri, {
+    serverSelectionTimeoutMS: 10000,
   });
+  isConnected = true;
+};
+
+// Middleware: Pastikan koneksi MongoDB selalu siap sebelum mengolah request
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('❌ [MONGODB ATLAS ERROR]:', err.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Gagal terhubung ke database MongoDB Atlas.',
+      error: err.message,
+    });
+  }
+});
 
 // ==========================================
 // 3. ROUTE API AUTENTIKASI
