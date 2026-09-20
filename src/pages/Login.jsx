@@ -125,7 +125,7 @@ export default function Login() {
 
                     {/* Hint akun dari MongoDB */}
                     <div className="mt-4 p-3 rounded-xl bg-slate-800/60 border border-slate-700/50 text-xs text-slate-400 text-center">
-                        Akun MongoDB: <code className="text-cyan-300">---</code> / <code className="text-cyan-300">---</code>
+                        Akun MongoDB: <code className="text-cyan-300">rendra@gmail.com</code> / <code className="text-cyan-300">123456</code>
                     </div>
                 </div>
 
